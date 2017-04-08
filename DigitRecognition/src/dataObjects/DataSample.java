@@ -3,6 +3,7 @@ package dataObjects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import enums.DigitClass;
 import enums.FeatureValues;
@@ -68,5 +69,13 @@ public static List<DataSample> split(List<DataSample> dataSet, Feature featureTo
 	return subSet;
 }
 
+public Vector<Integer> asVector() {
+	Vector<Integer> v = new Vector<Integer>();
+	
+	for (Map.Entry<Feature, Integer> e : data.entrySet()) {
+		v.add(e.getValue());
+	}
+	return v;
+}
 	
 }
