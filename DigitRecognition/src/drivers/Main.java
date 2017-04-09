@@ -12,13 +12,14 @@ import dataObjects.DataSample;
 import dataObjects.Feature;
 import enums.DigitClass;
 import enums.FeatureValues;
+import clustering.ClusteringAlgorithm;
 
 public class Main {
 
 	public static void main(String[] args) {
 		
 		//File Locations
-		String FeaturesLocation = "Features\\feature";
+		String FeaturesLocation = "Features/feature";
 		String FeatureFormat = "PIXEL";
 		
 		//Consts
@@ -50,9 +51,6 @@ public class Main {
 			
 				currentClass = DigitClass.values()[i];
 				
-				//Data set used to store the individual features and their values
-				Map<Feature,Integer> dataSet = new Hashtable<Feature,Integer>();
-				
 			    //Read File
 				fileReader = new FileReader(FeaturesLocation + i + ".txt");
 				bufferReader = new BufferedReader(fileReader);
@@ -65,6 +63,8 @@ public class Main {
 					
 					//Data sample
 					DataSample currentSample = new DataSample();
+					//Data set used to store the individual features and their values
+					Map<Feature,Integer> dataSet = new Hashtable<Feature,Integer>();
 					
 					currentSample.setId(sampleCount);
 					currentSample.setDigitClass(currentClass);
@@ -109,14 +109,16 @@ public class Main {
 				
 			}
 			
-			StringBuilder stringToOutput  = new StringBuilder();
+			//StringBuilder stringToOutput  = new StringBuilder();
 			
-			for(DataSample sample: featuresDataSet){
+			/*for(DataSample sample: featuresDataSet){
 				
 				System.out.println( "ID: " + sample.getId() + "  Class: " + sample.getDigitClass() + sample.getData().toString() + "\n");
 			}
 			
-			System.out.println(stringToOutput);
+			System.out.println(stringToOutput);*/
+			System.out.println("Finished");
+			ClusteringAlgorithm ca = new ClusteringAlgorithm(featuresDataSet);
 
 		}catch(IOException e){
 			e.printStackTrace();
