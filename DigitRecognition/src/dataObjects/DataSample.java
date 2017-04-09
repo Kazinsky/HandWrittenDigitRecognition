@@ -77,5 +77,11 @@ public Vector<Integer> asVector() {
 	}
 	return v;
 }
+
+@Override
+public String toString() {
+	return "DataSample [id=" + id + ", data=" + data + ", digitClass=" + digitClass + "]";
+}
 	
+
 }
