@@ -17,6 +17,8 @@ public class Cluster {
     	alpha = a;
     	beta = b;
     	samples = new LinkedList<DataSample>();
+    	
+    	samples.add(ds);
     }
     
     public Cluster() {
@@ -28,7 +30,7 @@ public class Cluster {
     	
     	newCluster.samples = new LinkedList<DataSample>(samples);
     	newCluster.samples.addAll(cl.samples);
-    	newCluster.computeCenter();
+    	//newCluster.computeCenter();
     	
     	return newCluster;
     }
@@ -38,10 +40,10 @@ public class Cluster {
     // In idx = 1, number of attributes where second = 0 and first = 1
     // In idx = 2, number of attributes where second = 1 and first = 0
     // In idx = 3, number of attributes where both = 0
-    private Integer[] buildMatrix(Vector<Integer> first, Vector<Integer> second) {
-    	Integer[] res = new Integer[4];
+    private int[] buildMatrix(Vector<Integer> first, Vector<Integer> second) {
+    	int[] res = new int[4];
     	
-    	for (int i = 0; i < (first.size() / 2); ++i) {
+    	for (int i = 0; i < first.size(); ++i) {
     		if (first.get(i) == second.get(i) && first.get(i) == 1) {
     			res[0]++;
     		}
@@ -60,7 +62,7 @@ public class Cluster {
     }
     
     private float compare(DataSample first, DataSample second) {
-    	Integer[] mat = buildMatrix(first.asVector(), second.asVector());
+    	int[] mat = buildMatrix(first.asVector(), second.asVector());
     	
     	return ((alpha * mat[0]) + (beta * mat[3])) / ((alpha * mat[0]) + (beta * mat[3]) + 2 * (mat[1] + mat[2]));
     }
@@ -97,7 +99,7 @@ public class Cluster {
     public void add(DataSample ds) {
     	samples.add(ds);
     	if (samples.size() > 2) {
-    		computeCenter();
+    		//computeCenter();
     	}
     }
     

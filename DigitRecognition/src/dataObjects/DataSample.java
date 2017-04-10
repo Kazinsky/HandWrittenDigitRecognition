@@ -72,8 +72,13 @@ public static List<DataSample> split(List<DataSample> dataSet, Feature featureTo
 public Vector<Integer> asVector() {
 	Vector<Integer> v = new Vector<Integer>();
 	
-	for (Map.Entry<Feature, Integer> e : data.entrySet()) {
-		v.add(e.getValue());
+	for (int r = 0; r < 20; ++r) {
+		for (int c = 0; c < 20; ++c) {
+			if (data.get(new Feature("PIXEL" + r + ":"+c)) == null) {
+				System.out.println("null at " + id + " " + r + ":" + c);
+			}
+			v.add(data.get(new Feature("PIXEL" + r + ":"+c)));
+		}
 	}
 	return v;
 }

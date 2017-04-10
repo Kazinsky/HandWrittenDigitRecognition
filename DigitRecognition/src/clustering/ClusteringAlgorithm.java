@@ -1,9 +1,11 @@
 package clustering;
 
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Iterator;
 import dataObjects.DataSample;
 import enums.DigitClass;
+import enums.FeatureValues;
 
 public class ClusteringAlgorithm {
     private List<Cluster> clusters;
@@ -15,12 +17,14 @@ public class ClusteringAlgorithm {
     	alpha = 2.5f;
 		beta = 2.5f;
 		threshold = 0.7f;
+		clusters = new LinkedList<Cluster>();
 		
 		train(trainingSet);
     }
     
     private void train(List<DataSample> trainingSet) {
     	boolean isAdd;
+    	int i = 0;
 		for (DataSample ds : trainingSet) {
 			isAdd = false;
 			for (Cluster c : clusters) {
@@ -35,7 +39,7 @@ public class ClusteringAlgorithm {
 				clusters.add(new Cluster(ds, alpha, beta));
 			}
 			else {
-				boolean remove;
+				/*boolean remove;
 				for (Iterator<Cluster> it = clusters.listIterator(); it.hasNext(); ) {
 					Cluster c = it.next();
 					remove = false;
@@ -50,9 +54,10 @@ public class ClusteringAlgorithm {
 							}
 						}
 					}
-				}
+				}*/
 			}
 		}
+		System.out.println("Finished");
     }
 
     // Try to guess to which digits belong ds
@@ -73,5 +78,16 @@ public class ClusteringAlgorithm {
     // Change threshold value
     public void setThreshold(float t) {
     	threshold = t;
+    }
+    
+    public int getNumberClusterOf(DigitClass dc) {
+    	int count = 0;
+    	
+    	for (Cluster c : clusters) {
+    		if (c.getDigitClass() == dc) {
+    			count++;
+    		}
+    	}
+    	return count;
     }
 } // End Class
