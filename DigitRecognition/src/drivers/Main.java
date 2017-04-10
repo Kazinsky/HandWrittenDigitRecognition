@@ -21,6 +21,9 @@ public class Main {
 		//File Locations
 		String FeaturesLocation = "Features/feature";
 		String FeatureFormat = "PIXEL";
+
+		// Used to store the data for one sample;
+		String sample;
 		
 		//Consts
 		final int NUMBER_OF_CLASSES = 10;
@@ -39,7 +42,7 @@ public class Main {
 			//Variables to store data
 			DigitClass currentClass;
 			char currentChar = ' ';
-			int charValue = 0;
+			String line;
 			
 			//Counts
 			int sampleCount = 0;
@@ -51,60 +54,47 @@ public class Main {
 			
 				currentClass = DigitClass.values()[i];
 				
-			    //Read File
 				fileReader = new FileReader(FeaturesLocation + i + ".txt");
 				bufferReader = new BufferedReader(fileReader);
 				
-				//Read input from the file and store into char
+				sample = "";
 
-				while((charValue = bufferReader.read()) != -1){
+			    //Read File line by line
+				while((line = bufferReader.readLine()) != null) {
 					
-					currentChar = (char)charValue;
-					
-					//Data sample
-					DataSample currentSample = new DataSample();
-					//Data set used to store the individual features and their values
-					Map<Feature,Integer> dataSet = new Hashtable<Feature,Integer>();
-					
-					currentSample.setId(sampleCount);
-					currentSample.setDigitClass(currentClass);
-					
-					currentRow = 0;
-					
-					//For Each row in the Matrix of features
-					while(currentRow < NUMBER_OF_ROWS){
-						
-						currentCol = 0;
-						
-						//For each collumn of the matrix
-						while(currentCol < NUMBER_OF_COLUMNS){
-							
-								if(currentChar  == Integer.toString(FeatureValues.Black.getValue()).toCharArray()[0]){
-									dataSet.put(new Feature(FeatureFormat + currentRow + ":" + currentCol), FeatureValues.Black.getValue());
-									currentCol++;
+					// When we encounter an empty create the sample
+					if (line.length() == 0) {
+						if (sample.length() == NUMBER_OF_ROWS * NUMBER_OF_COLUMNS) {
+							//Data sample
+							DataSample currentSample = new DataSample();
+							//Data set used to store the individual features and their values
+							Map<Feature,Integer> dataSet = new Hashtable<Feature,Integer>();
+
+							currentSample.setId(sampleCount);
+							currentSample.setDigitClass(currentClass);
+
+							for (currentRow = 0; currentRow < NUMBER_OF_ROWS; ++currentRow) {
+								for (currentCol = 0; currentCol < NUMBER_OF_COLUMNS; ++currentCol) {
+									currentChar = sample.charAt(currentRow * NUMBER_OF_COLUMNS + currentCol);
+									if (currentChar == '1') {
+										dataSet.put(new Feature(FeatureFormat + currentRow + ":" + currentCol), FeatureValues.Black.getValue());
+									}
+									else if (currentChar == '0') {
+										dataSet.put(new Feature(FeatureFormat + currentRow + ":" + currentCol), FeatureValues.White.getValue());
+									}
 								}
-								else if(currentChar == Integer.toString(FeatureValues.White.getValue()).toCharArray()[0]){
-									dataSet.put(new Feature(FeatureFormat + currentRow + ":" + currentCol), FeatureValues.White.getValue());
-									currentCol++;
-								}
-								
-								//Read next Character
-								if((charValue = bufferReader.read()) != -1){
-									currentChar = (char)charValue;
-								}
-								else{
-									currentCol++;
-								}
-								
 							}
-
-						currentRow++;
+							
+							currentSample.setData(dataSet);
+							featuresDataSet.add(currentSample);
+							sample = "";
+						}
 					}
-					
-					currentSample.setData(dataSet);
-					featuresDataSet.add(currentSample);
-					sampleCount++;
-	
+					else {
+						// Remove all whitespace character and append to the sample
+						line = line.replaceAll("\\s+", "");
+						sample += line;
+					}
 				}
 				
 			}
@@ -118,7 +108,16 @@ public class Main {
 			
 			System.out.println(stringToOutput);*/
 			System.out.println("Finished");
-			ClusteringAlgorithm ca = new ClusteringAlgorithm(featuresDataSet);
+			DataSample d = featuresDataSet.get(0);
+
+			for (currentRow = 0; currentRow < NUMBER_OF_ROWS; ++currentRow) {
+				for (currentCol = 0; currentCol < NUMBER_OF_COLUMNS; ++currentCol) {
+					System.out.print(d.getData().get(new Feature(FeatureFormat + currentRow + ":" + currentCol)));
+				}
+				System.out.println("");
+			}
+			
+			//ClusteringAlgorithm ca = new ClusteringAlgorithm(featuresDataSet);
 
 		}catch(IOException e){
 			e.printStackTrace();
