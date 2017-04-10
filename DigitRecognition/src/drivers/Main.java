@@ -8,6 +8,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import classifiers.DecisionTree;
+import classifiers.NaiveBayes;
 import dataObjects.DataSample;
 import dataObjects.Feature;
 import enums.DigitClass;
@@ -36,6 +38,7 @@ public class Main {
 		
 		//Data objects to store data
 		List<DataSample> featuresDataSet = new ArrayList<DataSample>();
+		List<Feature> allPosibleFeatures = new ArrayList<Feature>();
 		
 		/***Load Data From Files**/
 		try{
@@ -99,15 +102,25 @@ public class Main {
 				
 			}
 			
-			//StringBuilder stringToOutput  = new StringBuilder();
+			//Store all possible Feature strings
+			for(int i =0; i< NUMBER_OF_ROWS; i++){
+				
+				for(int j = 0; j < NUMBER_OF_COLUMNS; j++){
+					
+					allPosibleFeatures.add(new Feature(FeatureFormat + i + ":" + j));
+				}
+				
+			}
+			
 			
 			/*for(DataSample sample: featuresDataSet){
 				
 				System.out.println( "ID: " + sample.getId() + "  Class: " + sample.getDigitClass() + sample.getData().toString() + "\n");
 			}
-			
-			System.out.println(stringToOutput);*/
+			*/
+
 			System.out.println("Finished");
+			
 			DataSample d = featuresDataSet.get(0);
 
 			for (currentRow = 0; currentRow < NUMBER_OF_ROWS; ++currentRow) {
@@ -118,7 +131,27 @@ public class Main {
 			}
 			
 			//ClusteringAlgorithm ca = new ClusteringAlgorithm(featuresDataSet);
+			
+		System.out.println("Finished");
+			
+		
+			
+			//NaiveBayes naiveBayes = new NaiveBayes(allPosibleFeatures);
+			
+			//naiveBayes.train(featuresDataSet);
+			
+			//System.out.println(naiveBayes.classify(featuresDataSet.get(0)));
 
+
+			//DecisionTree decisionTree = new DecisionTree();
+
+			//decisionTree.train(featuresDataSet, allPosibleFeatures);
+			
+			//decisionTree.printTree();
+			
+			
+			
+			
 		}catch(IOException e){
 			e.printStackTrace();
 		}finally{
