@@ -8,6 +8,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import classifiers.DecisionTree;
+//import classifiers.NaiveBayes;
 import dataObjects.DataSample;
 import dataObjects.Feature;
 import enums.DigitClass;
@@ -39,6 +41,7 @@ public class Main {
 		//Data objects to store data
 		List<DataSample> trainingDataSet = new ArrayList<DataSample>();
 		List<DataSample> testingDataSet = new ArrayList<DataSample>();
+		List<Feature> allPosibleFeatures = new ArrayList<Feature>();
 		
 		/***Load Data From Files**/
 		System.out.println("Start loading datas...");
@@ -113,8 +116,8 @@ public class Main {
 			long stopTime = System.currentTimeMillis();
 		    long elapsedTime = stopTime - startTime;
 			System.out.println("Samples loaded in " + elapsedTime + "ms...");
-			
-			System.out.println("Init clustering..");
+
+			/*System.out.println("Init clustering..");
 			startTime = System.currentTimeMillis();
 			ClusteringAlgorithm ca = new ClusteringAlgorithm(trainingDataSet);
 			stopTime = System.currentTimeMillis();
@@ -134,6 +137,7 @@ public class Main {
 				found[i] = 0;
 			}
 			System.out.println("Start classification...");
+			startTime = System.currentTimeMillis();
 			int count = 0;
 			float nextPrint = 0.1f;
 			for (DataSample ds : testingDataSet) {
@@ -148,12 +152,44 @@ public class Main {
 					nextPrint += 0.1f;
 				}
 			}
-			
+			stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
+			System.out.println("Clustering finished in " + elapsedTime +"ms...");
 			for (int i = 0; i < NUMBER_OF_CLASSES; ++i) {
 				System.out.println("Found " + found[i] + " out of " + total[i] + " for digit " + DigitClass.values()[i]);
+			}*/
+			
+			//Store all possible Feature strings
+			for(int i =0; i< NUMBER_OF_ROWS; i++){
+				
+				for(int j = 0; j < NUMBER_OF_COLUMNS; j++){
+					
+					allPosibleFeatures.add(new Feature(FeatureFormat + i + ":" + j));
+				}
+				
 			}
-			System.out.println("Clustering finished...");
 
+			/*DataSample d = trainingDataSet.get(0);
+
+			for (currentRow = 0; currentRow < NUMBER_OF_ROWS; ++currentRow) {
+				for (currentCol = 0; currentCol < NUMBER_OF_COLUMNS; ++currentCol) {
+					System.out.print(d.getData().get(new Feature(FeatureFormat + currentRow + ":" + currentCol)));
+				}
+			}*/
+
+			//NaiveBayes naiveBayes = new NaiveBayes(allPosibleFeatures);
+			
+			//naiveBayes.train(featuresDataSet);
+			
+			//System.out.println(naiveBayes.classify(featuresDataSet.get(0)));
+
+
+			//DecisionTree decisionTree = new DecisionTree();
+
+			//decisionTree.train(featuresDataSet, allPosibleFeatures);
+			
+			//decisionTree.printTree();
+			
 		}catch(IOException e){
 			e.printStackTrace();
 		}finally{
@@ -167,11 +203,7 @@ public class Main {
 				
 			}catch (IOException e){
 				e.printStackTrace();
-			}
-			
+			}			
 		}
-	
-
 	}
-
 }

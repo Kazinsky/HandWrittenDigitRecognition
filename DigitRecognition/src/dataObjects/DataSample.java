@@ -63,11 +63,11 @@ public static List<DataSample> split(List<DataSample> dataSet, Feature featureTo
 	
 	List<DataSample> subSet = new ArrayList<DataSample>();
 	
-	DataSample sample = new DataSample();
-	
 	for(DataSample item: dataSet){
 		
 		if(item.data.get(featureToSplitOn) == featureValue.getValue()){
+			
+			DataSample sample = new DataSample();
 			
 			sample.setId(item.getId());
 			sample.setData(item.getData());

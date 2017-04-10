@@ -15,12 +15,18 @@ private final int NUMBER_OF_CLASSES = 10;
 //Root of the tree
 private DecisionTreeNode root;
 
-
+//Constructor
 public DecisionTree() {
 }
 
 //Returns The Root Node of the Decision tree
 public DecisionTreeNode buildTree(List<DataSample> dataSet, List<Feature> unusedFeatures){
+	
+	//Check if current data set is all the same class
+	if(areAllSameClass(dataSet)){
+		return  new DecisionTreeNode(dataSet.get(0).getDigitClass());
+	}
+	
 	//Feature that will be used to split on and assigned to the next child
 	Feature bestSplitFeature = new Feature("");
 	
@@ -29,10 +35,15 @@ public DecisionTreeNode buildTree(List<DataSample> dataSet, List<Feature> unused
 	//Entropy value
 	double smallestEntropy = -1;
 	
+	//If there is still data but no more unused Features
+	if(unusedFeatures.isEmpty()){
+		return  new DecisionTreeNode(getMajorityClassValue(dataSet));
+	}
+	
 	//For each unused feature find the one with the smallest entropy value
 	for(int i = 0; i< unusedFeatures.size();i++){
 		
-		double currentEntropy = calculateEntropy(NUMBER_OF_CLASSES,dataSet);
+		double currentEntropy = calculateEntropy(NUMBER_OF_CLASSES, DataSample.split(dataSet, unusedFeatures.get(i), FeatureValues.Black));
 		
 		if(currentEntropy < smallestEntropy || smallestEntropy == -1){
 			smallestEntropy = currentEntropy;
@@ -129,9 +140,10 @@ private double calculateEntropy(int NumberOfClasses, List<DataSample> dataSet){
 			prob = count / (double)dataSet.size();
 			
 			if(count > 0){
-				entropy += prob * (Math.log(1/prob)/Math.log((2)));
+				entropy += -prob * (Math.log(prob) / Math.log(2));
 			}
-			
+			//-prob * (Math.log(prob) / Math.log(2));
+			//prob * (Math.log(1/prob)/Math.log((2)))
 		}
 	}
 	
@@ -164,6 +176,65 @@ private DigitClass getMajorityClassValue(List<DataSample> dataSet){
 	
 	return DigitClass.values()[majorityClass];
 
+}
+
+//Get Class of first elements and see if all other elements have same class if they do return true else return false
+private boolean areAllSameClass(List<DataSample> dataSet){
+
+	DigitClass classToCheck = null;
+	
+	if(dataSet.size() > 0)
+		classToCheck = dataSet.get(0).getDigitClass();
+	
+	
+		for(DataSample sample: dataSet){
+			if(sample.getDigitClass().getValue() != classToCheck.getValue())
+				return false;
+				
+		}
+		
+	return true;
+
+}
+
+public void printTree() {
+    printSubtree(root);
+}
+
+public void printSubtree(DecisionTreeNode node) {
+    if (!node.getChildren().isEmpty() && node.getChildren().get(0) != null) {
+        printTree(node.getChildren().get(0), true, "");
+    }
+    printNodeValue(node);
+    if (node.getChildren().size() > 1 && node.getChildren().get(1) != null) {
+        printTree(node.getChildren().get(1), false, "");
+    }
+}
+
+private void printNodeValue(DecisionTreeNode node) {
+    if (node.isLeaf()) {
+        System.out.print(node.getDigitClass());
+    } else {
+        System.out.print(node.getFeature().getName());
+    }
+    System.out.println();
+}
+
+private void printTree(DecisionTreeNode node, boolean isRight, String indent) {
+    if (!node.getChildren().isEmpty() && node.getChildren().get(0) != null) {
+        printTree(node.getChildren().get(0), true, indent + (isRight ? "        " : " |      "));
+    }
+    System.out.print(indent);
+    if (isRight) {
+        System.out.print(" /");
+    } else {
+        System.out.print(" \\");
+    }
+    System.out.print("----- ");
+    printNodeValue(node);
+    if (node.getChildren().size() > 1 && node.getChildren().get(1) != null) {
+        printTree(node.getChildren().get(1), false, indent + (isRight ? " |      " : "        "));
+    }
 }
 
 }// End Class
