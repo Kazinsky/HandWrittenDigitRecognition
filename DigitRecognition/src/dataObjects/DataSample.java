@@ -13,6 +13,7 @@ public class DataSample {
 private int id;
 private Map<Feature,Integer> data;
 private DigitClass digitClass;
+private Vector<Integer> vectorData;
 
 public DataSample() {
 }
@@ -37,6 +38,16 @@ public Map<Feature, Integer> getData() {
 
 public void setData(Map<Feature, Integer> data) {
 	this.data = data;
+	vectorData = new Vector<Integer>();
+	
+	for (int r = 0; r < 20; ++r) {
+		for (int c = 0; c < 20; ++c) {
+			if (data.get(new Feature("PIXEL" + r + ":"+c)) == null) {
+				System.out.println("null at " + id + " " + r + ":" + c);
+			}
+			vectorData.add(data.get(new Feature("PIXEL" + r + ":"+c)));
+		}
+	}
 }
 
 public DigitClass getDigitClass() {
@@ -70,23 +81,12 @@ public static List<DataSample> split(List<DataSample> dataSet, Feature featureTo
 }
 
 public Vector<Integer> asVector() {
-	Vector<Integer> v = new Vector<Integer>();
-	
-	for (int r = 0; r < 20; ++r) {
-		for (int c = 0; c < 20; ++c) {
-			if (data.get(new Feature("PIXEL" + r + ":"+c)) == null) {
-				System.out.println("null at " + id + " " + r + ":" + c);
-			}
-			v.add(data.get(new Feature("PIXEL" + r + ":"+c)));
-		}
-	}
-	return v;
+	return vectorData;
 }
 
 @Override
 public String toString() {
 	return "DataSample [id=" + id + ", data=" + data + ", digitClass=" + digitClass + "]";
 }
-	
 
 }

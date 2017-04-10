@@ -23,46 +23,75 @@ public class ClusteringAlgorithm {
     }
     
     private void train(List<DataSample> trainingSet) {
-    	boolean isAdd;
-    	int i = 0;
-		for (DataSample ds : trainingSet) {
-			isAdd = false;
+    	float maxThreshold;
+    	float t;
+    	int done = 0;
+    	float nextPrint = 0.1f;
+    	
+    	for (DataSample ds : trainingSet) {
+	    	Cluster toAdd = null;
+			maxThreshold = 0;
 			for (Cluster c : clusters) {
-				float t = c.compare(ds);
-				if (t >= threshold) {
-					c.add(ds);
-					isAdd = true;
-					break;
+				t = c.compare(ds);
+				if (t >= threshold && t > maxThreshold) {
+					maxThreshold = t;
+					toAdd = c;
 				}
 			}
-			if (isAdd == false) {
+			if (toAdd == null) {
 				clusters.add(new Cluster(ds, alpha, beta));
 			}
 			else {
-				/*boolean remove;
-				for (Iterator<Cluster> it = clusters.listIterator(); it.hasNext(); ) {
-					Cluster c = it.next();
-					remove = false;
-					for (Iterator<Cluster> it2 = clusters.listIterator(); it.hasNext(); ) {
-						Cluster other = it2.next();
-						if (c != other) {
-							float t = c.compare(other);
-							
-							if (t < threshold) {
-								// Merge both clusters
-								remove = true;
-							}
+				Cluster newCluster = null;
+				toAdd.add(ds);
+				toAdd.computeCenter();
+				List<Cluster> toRemove = new LinkedList<Cluster>();
+				for (Cluster other : clusters) {
+					if (toAdd != other) {
+						t = toAdd.compare(other);
+						
+						if (t > threshold) {
+							// Merge both clusters
+							/*if (newCluster == null)
+								newCluster = toAdd.merge(other);
+							else
+								newCluster = newCluster.merge(other);
+								*/
+							toRemove.add(other);
 						}
 					}
-				}*/
+				}
+				if (newCluster != null) {
+					clusters.removeAll(toRemove);
+					clusters.remove(toAdd);
+					toAdd = null;
+					clusters.add(newCluster);
+				}
+			}
+			done++;
+			if ((float)done / trainingSet.size() >= nextPrint) {
+				System.out.println(nextPrint * 100.0f + "% done...");
+				nextPrint += 0.1f;
 			}
 		}
-		System.out.println("Finished");
     }
 
     // Try to guess to which digits belong ds
     public DigitClass test(DataSample ds) {
-    	return DigitClass.Zero;
+    	//float[] max = { 0.0f, 0.0f, 0.0f };
+    	//int[] classValue = { -1, -1, -1 };
+    	float max = 0.0f;
+    	DigitClass dc = null;
+    	
+    	for (Cluster cl : clusters) {
+    		float t = cl.compare(ds);
+    		
+    		if (t > max) {
+    			max = t;
+    			dc = cl.getDigitClass();
+    		}
+    	}
+    	return dc;
     }
 
     // Change alpha value

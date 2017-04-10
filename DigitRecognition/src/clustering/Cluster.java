@@ -9,6 +9,7 @@ import enums.DigitClass;
 public class Cluster {
     private DataSample center;
     private List<DataSample> samples;
+    private List<Float> averages;
     private float alpha;
     private float beta;
     
@@ -17,20 +18,28 @@ public class Cluster {
     	alpha = a;
     	beta = b;
     	samples = new LinkedList<DataSample>();
+    	averages = new LinkedList<Float>();
     	
+    	averages.add(1.0f);
     	samples.add(ds);
     }
     
     public Cluster() {
-    	
+    	center = null;
     }
     
     public Cluster merge(Cluster cl) {
     	Cluster newCluster = new Cluster();
     	
     	newCluster.samples = new LinkedList<DataSample>(samples);
-    	newCluster.samples.addAll(cl.samples);
-    	//newCluster.computeCenter();
+    	newCluster.averages = new LinkedList<Float>(averages);
+    	newCluster.alpha = alpha;
+    	newCluster.beta = beta;
+    	for (DataSample ds : cl.samples) {
+    		newCluster.add(ds);
+    	}
+    	
+    	newCluster.computeCenter();
     	
     	return newCluster;
     }
@@ -42,15 +51,20 @@ public class Cluster {
     // In idx = 3, number of attributes where both = 0
     private int[] buildMatrix(Vector<Integer> first, Vector<Integer> second) {
     	int[] res = new int[4];
+    	int fValue;
+    	int sValue;
     	
     	for (int i = 0; i < first.size(); ++i) {
-    		if (first.get(i) == second.get(i) && first.get(i) == 1) {
+    		fValue = first.get(i);
+    		sValue = second.get(i);
+    		
+    		if (fValue == sValue && fValue == 1) {
     			res[0]++;
     		}
-    		else if (first.get(i) == second.get(i) && first.get(i) == 0) {
+    		else if (fValue == sValue && fValue == 0) {
     			res[3]++;
     		}
-    		else if (first.get(i) == 1) {
+    		else if (fValue == 1) {
     			res[1]++;
     		}
     		else {
@@ -80,16 +94,14 @@ public class Cluster {
     public void computeCenter() {
     	float maxAverage = 0.0f;
     	DataSample d = null;
+    	float v;
     	
-    	for (DataSample ds : samples) {
-    		float average = 0;
-    		for (DataSample other : samples) {
-    			average += compare(ds, other);
-    		}
-    		average /= samples.size();
-    		if (average > maxAverage) {
-    			maxAverage = average;
-    			d = ds;
+    	for (int i = 0; i < samples.size(); ++i) {
+    		v = averages.get(i) / samples.size() ;
+    		
+    		if (v > maxAverage) {
+    			maxAverage = v;
+    			d = samples.get(i);
     		}
     	}
     	center = d;
@@ -97,10 +109,21 @@ public class Cluster {
     
     // Add sample to this cluster
     public void add(DataSample ds) {
-    	samples.add(ds);
-    	if (samples.size() > 2) {
-    		//computeCenter();
+    	float dsAverage = 1.0f;
+    	DataSample s;
+    	for (int i = 0; i < samples.size(); ++i) {
+    		s = samples.get(i);
+    		float v = averages.get(i);
+    		float t = compare(s, ds);
+    		
+    		v += t;
+    		dsAverage += t;
+    		
+    		averages.set(i, v);
     	}
+    	
+    	averages.add(dsAverage);
+    	samples.add(ds);
     }
     
     // Returns the DigitClass corresponding to this cluster
