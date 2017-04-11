@@ -17,7 +17,8 @@ public class NaiveBayes implements Algorithm {
 	private int[] totalsInEachClass;
 	private int totalNumSamples = 0;
 	private int numberOfclasses = DigitClass.values().length;
-	private Map<Feature,int[]> totalsFeaturesAndClass = new HashMap<Feature,int[]>();
+	private Map<Feature,int[]> totalsFeaturesAndClassWhite = new HashMap<Feature,int[]>();
+	private Map<Feature,int[]> totalsFeaturesAndClassBlack = new HashMap<Feature,int[]>();
 	private List<Feature> features;
 
 		//Constructor	
@@ -30,7 +31,8 @@ public class NaiveBayes implements Algorithm {
 		features = new ArrayList<Feature>(allPossibleFeatures);
 		
 		for(Feature feature: allPossibleFeatures){
-			totalsFeaturesAndClass.put(feature, new int[numberOfclasses]);
+			totalsFeaturesAndClassBlack.put(feature, new int[numberOfclasses]);
+			totalsFeaturesAndClassWhite.put(feature, new int[numberOfclasses]);
 		}
 	}
 	
@@ -50,10 +52,14 @@ public class NaiveBayes implements Algorithm {
 			//For each feature
 			for(Feature feature: features){
 				
-				//If this sample's feature is black then we want to count it if it's white we ignore it
+				//If this sample's feature is black then we want to count it
 				if(sample.getData().get(feature) == FeatureValues.Black.getValue()){
 					
-					totalsFeaturesAndClass.get(feature)[currentSamplesClass.getValue()] += 1;
+					totalsFeaturesAndClassBlack.get(feature)[currentSamplesClass.getValue()] += 1;
+				}
+				else if(sample.getData().get(feature) == FeatureValues.White.getValue()){
+					
+					totalsFeaturesAndClassWhite.get(feature)[currentSamplesClass.getValue()] += 1;
 				}
 			}
 		}
@@ -73,10 +79,14 @@ public class NaiveBayes implements Algorithm {
 			
 			for(Feature feature: features){
 				
-				//If this feature in this sample is black then we add it's probability else we don't
+				//If this feature in this sample is black then we add it's probability
 				if(sample.getData().get(feature) == FeatureValues.Black.getValue()){
 					//Add probability of this feature from the training data recorded values
-					score *= (float)totalsFeaturesAndClass.get(feature)[i]/ totalsInEachClass[i];
+					score *= ((float)totalsFeaturesAndClassBlack.get(feature)[i] + 1)/ (totalsInEachClass[i] + 2);
+				}
+				else if(sample.getData().get(feature) == FeatureValues.White.getValue()){
+					//Add probability of this feature from the training data recorded values
+					score *= ((float)totalsFeaturesAndClassWhite.get(feature)[i] + 1)/ (totalsInEachClass[i] + 2);
 				}
 			}
 			
