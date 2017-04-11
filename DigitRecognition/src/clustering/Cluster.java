@@ -1,7 +1,7 @@
 package clustering;
 
 import java.util.List;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Vector;
 import dataObjects.DataSample;
 import enums.DigitClass;
@@ -17,8 +17,8 @@ public class Cluster {
     	center = ds;
     	alpha = a;
     	beta = b;
-    	samples = new LinkedList<DataSample>();
-    	averages = new LinkedList<Float>();
+    	samples = new ArrayList<DataSample>();
+    	averages = new ArrayList<Float>();
     	
     	averages.add(1.0f);
     	samples.add(ds);
@@ -29,16 +29,35 @@ public class Cluster {
     }
     
     public Cluster merge(Cluster cl) {
+    	DataSample ds;
+    	DataSample other;
+    	float v;
+    	float vOther;
+    	float t;
     	Cluster newCluster = new Cluster();
     	
-    	newCluster.samples = new LinkedList<DataSample>(samples);
-    	newCluster.averages = new LinkedList<Float>(averages);
+    	newCluster.samples = new ArrayList<DataSample>(samples);
+    	newCluster.averages = new ArrayList<Float>(averages);
     	newCluster.alpha = alpha;
     	newCluster.beta = beta;
-    	for (DataSample ds : cl.samples) {
-    		newCluster.add(ds);
+    	for (int i = 0; i < cl.samples.size(); ++i) {
+    		ds = cl.samples.get(i);
+    		v = cl.averages.get(i);
+    		
+    		for (int j = 0; j < newCluster.samples.size(); ++j) {
+    			other = newCluster.samples.get(j);
+    			vOther = newCluster.averages.get(i);
+
+    			t = compare(ds, other);
+    			v += t;
+    			vOther += t;
+    			
+    			newCluster.averages.set(i, vOther);
+    		}
+    		newCluster.averages.add(v);
     	}
     	
+    	newCluster.samples.addAll(cl.samples);
     	newCluster.computeCenter();
     	
     	return newCluster;

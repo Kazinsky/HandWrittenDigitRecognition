@@ -42,10 +42,11 @@ public void setData(Map<Feature, Integer> data) {
 	
 	for (int r = 0; r < 20; ++r) {
 		for (int c = 0; c < 20; ++c) {
-			if (data.get(new Feature("PIXEL" + r + ":"+c)) == null) {
+			Feature f = new Feature("PIXEL" + r + ":"+c);
+			if (data.get(f) == null) {
 				System.out.println("null at " + id + " " + r + ":" + c);
 			}
-			vectorData.add(data.get(new Feature("PIXEL" + r + ":"+c)));
+			vectorData.add(data.get(f));
 		}
 	}
 }

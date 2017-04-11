@@ -1,28 +1,27 @@
 package clustering;
 
+import interfaces.Algorithm;
 import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
+import java.util.ArrayList;
 import dataObjects.DataSample;
 import enums.DigitClass;
-import enums.FeatureValues;
 
-public class ClusteringAlgorithm {
+public class ClusteringAlgorithm implements Algorithm{
     private List<Cluster> clusters;
     private float alpha;
     private float beta;
     private float threshold;
+    private int kNeighbours;
     
-    public ClusteringAlgorithm(List<DataSample> trainingSet) {
+    public ClusteringAlgorithm() {
     	alpha = 2.5f;
 		beta = 2.5f;
 		threshold = 0.7f;
-		clusters = new LinkedList<Cluster>();
-		
-		train(trainingSet);
+		clusters = new ArrayList<Cluster>();
+		kNeighbours = 1;
     }
     
-    private void train(List<DataSample> trainingSet) {
+    public void train(List<DataSample> trainingSet) {
     	float maxThreshold;
     	float t;
     	int done = 0;
@@ -45,18 +44,18 @@ public class ClusteringAlgorithm {
 				Cluster newCluster = null;
 				toAdd.add(ds);
 				toAdd.computeCenter();
-				List<Cluster> toRemove = new LinkedList<Cluster>();
+				List<Cluster> toRemove = new ArrayList<Cluster>();
 				for (Cluster other : clusters) {
-					if (toAdd != other) {
+					if (toAdd != other && toAdd.getDigitClass() == other.getDigitClass()) {
 						t = toAdd.compare(other);
 						
 						if (t > threshold) {
 							// Merge both clusters
-							/*if (newCluster == null)
+							if (newCluster == null)
 								newCluster = toAdd.merge(other);
 							else
 								newCluster = newCluster.merge(other);
-								*/
+								
 							toRemove.add(other);
 						}
 					}
@@ -77,21 +76,36 @@ public class ClusteringAlgorithm {
     }
 
     // Try to guess to which digits belong ds
-    public DigitClass test(DataSample ds) {
-    	//float[] max = { 0.0f, 0.0f, 0.0f };
-    	//int[] classValue = { -1, -1, -1 };
-    	float max = 0.0f;
-    	DigitClass dc = null;
-    	
+    public DigitClass classify(DataSample ds) {
+    	float[] max = new float[kNeighbours];
+    	int[] classValue = new int[kNeighbours];
+
     	for (Cluster cl : clusters) {
     		float t = cl.compare(ds);
     		
-    		if (t > max) {
-    			max = t;
-    			dc = cl.getDigitClass();
+    		for (int i = kNeighbours - 1; i >= 0; --i) {
+    			if (t > max[i]) {
+    				for (int j = i; j > 0; --j) {
+    					max[j - 1] = max[j];
+    					classValue[j - 1] = classValue[j];
+    				}
+    				max[i] = t;
+    				classValue[i] = cl.getDigitClass().getValue();
+    				break;
+    			}
     		}
     	}
-    	return dc;
+    	int[] total = {0,0,0,0,0,0,0,0,0,0};
+    	int maxVote = 0;
+    	int idx = 0;
+    	for (int i = 0; i < kNeighbours; ++i) {
+    		total[classValue[i]]++;
+    		if (total[classValue[i]] > maxVote) {
+    			maxVote = total[classValue[i]];
+    			idx = classValue[i];
+    		}
+    	}
+    	return DigitClass.values()[idx];
     }
 
     // Change alpha value
@@ -109,6 +123,10 @@ public class ClusteringAlgorithm {
     	threshold = t;
     }
     
+    public void setKNeighbours(int k) {
+    	kNeighbours = k;
+    }
+    
     public int getNumberClusterOf(DigitClass dc) {
     	int count = 0;
     	
@@ -118,5 +136,9 @@ public class ClusteringAlgorithm {
     		}
     	}
     	return count;
+    }
+    
+    public String getName() {
+    	return "Clustering";
     }
 } // End Class

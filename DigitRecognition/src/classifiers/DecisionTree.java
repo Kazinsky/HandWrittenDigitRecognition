@@ -1,14 +1,16 @@
 package classifiers;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import dataObjects.DataSample;
 import dataObjects.DecisionTreeNode;
 import dataObjects.Feature;
 import enums.DigitClass;
 import enums.FeatureValues;
+import interfaces.Algorithm;
 
-public class DecisionTree {
+public class DecisionTree implements Algorithm{
 
 private final int NUMBER_OF_CLASSES = 10;
 	
@@ -74,8 +76,6 @@ public DecisionTreeNode buildTree(List<DataSample> dataSet, List<Feature> unused
 			//Do the same we just did but now with the child node and data
 			featureNode.addChild(buildTree(split,unusedFeatures));
 		}
-		
-		
 	}
 	return featureNode;
 	
@@ -86,7 +86,9 @@ public DecisionTreeNode getRoot(){
 }
 
 // Provide a List of Training data + List of all possible features
-public void train(List<DataSample> trainingData, List<Feature> features){
+public void train(List<DataSample> trainingData){
+	List<Feature> features = new ArrayList<Feature>(trainingData.get(0).getData().keySet());
+	
 	root = buildTree(trainingData,features);
 }
 
@@ -235,6 +237,10 @@ private void printTree(DecisionTreeNode node, boolean isRight, String indent) {
     if (node.getChildren().size() > 1 && node.getChildren().get(1) != null) {
         printTree(node.getChildren().get(1), false, indent + (isRight ? " |      " : "        "));
     }
+}
+
+public String getName() {
+	return "Decision tree";
 }
 
 }// End Class

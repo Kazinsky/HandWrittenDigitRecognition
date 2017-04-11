@@ -2,14 +2,16 @@ package classifiers;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 import dataObjects.DataSample;
 import dataObjects.Feature;
 import enums.DigitClass;
 import enums.FeatureValues;
+import interfaces.Algorithm;
 
-public class NaiveBayes {
+public class NaiveBayes implements Algorithm {
 	
 	//Data objects to hold counts for probablities
 	private int[] totalsInEachClass;
@@ -19,19 +21,22 @@ public class NaiveBayes {
 	private List<Feature> features;
 
 		//Constructor	
-	public NaiveBayes(List<Feature> allPossibleFeatures){
-		features = allPossibleFeatures;
+	public NaiveBayes(){
 		
 		totalsInEachClass = new int[numberOfclasses];
+	}
+	
+	private void initFeaturesAndClass(List<Feature> allPossibleFeatures) {
+		features = new ArrayList<Feature>(allPossibleFeatures);
 		
 		for(Feature feature: allPossibleFeatures){
 			totalsFeaturesAndClass.put(feature, new int[numberOfclasses]);
 		}
-
 	}
 	
-	
 	public void train(List<DataSample> samples){
+		
+		initFeaturesAndClass(new ArrayList<Feature>(samples.get(0).getData().keySet()));
 		
 		totalNumSamples = samples.size();
 		
@@ -51,10 +56,7 @@ public class NaiveBayes {
 					totalsFeaturesAndClass.get(feature)[currentSamplesClass.getValue()] += 1;
 				}
 			}
-			
 		}
-		
-		
 	}
 	
 	public DigitClass classify(DataSample sample){
@@ -88,4 +90,7 @@ public class NaiveBayes {
 		return digitClass;
 	}
 
+	public String getName() {
+		return "Naive Bayes classifier";
+	}
 }
