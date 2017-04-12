@@ -67,14 +67,7 @@ public static List<DataSample> split(List<DataSample> dataSet, Feature featureTo
 	for(DataSample item: dataSet){
 		
 		if(item.data.get(featureToSplitOn) == featureValue.getValue()){
-			
-			DataSample sample = new DataSample();
-			
-			sample.setId(item.getId());
-			sample.setData(item.getData());
-			sample.setDigitClass(item.getDigitClass());
-			
-			subSet.add(sample);
+			subSet.add(item);
 		}
 	}
 	
