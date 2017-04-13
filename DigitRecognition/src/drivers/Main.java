@@ -12,8 +12,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		try {
-			ArgumentParser ap = new ArgumentParser();
-			
+			ArgumentParser ap = new ArgumentParser();			
 			ap.addArgument("--naive-loader", new NaiveFeatureLoader());
 			ap.addArgument("--clustering", new ClusteringAlgorithm());
 			ap.addArgument("--decision-tree", new DecisionTree());

@@ -90,15 +90,22 @@ public class ArgumentParser {
 				System.out.println("Testing with " + al.getName());
 				int[] total = new int[10];
 				int[] found = new int[10];
+				int[][] mistaken = new int[10][10];
 				startTime = System.currentTimeMillis();
 				int count = 0;
 				float nextPrint = 0.1f;
 				for (DataSample ds : testingSet) {
 					DigitClass d = al.classify(ds);
-					
+					//ds.getDigitClass = real digit class
+					//d = what the algorithm thought
 					total[ds.getDigitClass().getValue()]++;
-					if (ds.getDigitClass() == d)
+					if (ds.getDigitClass() == d){
 						found[d.getValue()]++;
+					}
+					else{
+						mistaken[ds.getDigitClass().getValue()][d.getValue()]++;
+						//the index of this array is [real digit]mistaken for -->[digit] --> {value} times
+					}
 					count++;
 					if ((float)count / testingSet.size() >= nextPrint) {
 						System.out.println(nextPrint * 100.0f + "% done...");
@@ -110,6 +117,12 @@ public class ArgumentParser {
 				System.out.println("Testing finished in " + elapsedTime +"ms...");
 				for (int i = 0; i < 10; ++i) {
 					System.out.println("Found " + found[i] + " out of " + total[i] + " for digit " + DigitClass.values()[i]);
+					for (int y = 0; y < 10; ++y){
+						if (y!=i){
+							System.out.println("digit " +DigitClass.values()[i] +" mistaken for digit "+DigitClass.values()[y]+" "+mistaken[i][y]+" times.");
+						}
+
+					}
 				}			
 			}
 		}
