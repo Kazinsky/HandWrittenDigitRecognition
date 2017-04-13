@@ -25,7 +25,7 @@ public class JTablePopupMenuExample extends JFrame implements ActionListener {
 	private JMenuItem menuItemAdd;
 	private JMenuItem menuItemRemove;
 	private JMenuItem menuItemRemoveAll;
-	
+	/*
 	public JTablePopupMenuExample() {
 		super("JTable Popup Menu Example");
 		
@@ -65,7 +65,7 @@ public class JTablePopupMenuExample extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(640, 150);
 		setLocationRelativeTo(null);
-	}
+	} */
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {

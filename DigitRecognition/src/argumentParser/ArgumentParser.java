@@ -5,10 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.Exception;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
 import interfaces.FeatureLoader;
 import interfaces.Algorithm;
 import enums.DigitClass;
 import dataObjects.DataSample;
+import gui.JTablePopupMenuExample;
 
 public class ArgumentParser {
 	// Map to store the 
@@ -115,15 +122,32 @@ public class ArgumentParser {
 				stopTime = System.currentTimeMillis();
 				elapsedTime = stopTime - startTime;
 				System.out.println("Testing finished in " + elapsedTime +"ms...");
+				String[] colNames = new String[]{"","0","1","2","3","4","5","6","7","8","9","%"};
+				String[][] rowData = new String[10][12];
 				for (int i = 0; i < 10; ++i) {
 					System.out.println("Found " + found[i] + " out of " + total[i] + " for digit " + DigitClass.values()[i]);
 					for (int y = 0; y < 10; ++y){
-						if (y!=i){
+						if (y!=i)
 							System.out.println("digit " +DigitClass.values()[i] +" mistaken for digit "+DigitClass.values()[y]+" "+mistaken[i][y]+" times.");
+						rowData[i][y+1] = ""+mistaken[i][y];
+						rowData[i][0] = ""+i;
+						if (i==y){
+							rowData[i][y+1] = ""+found[i]; 
 						}
-
+						
 					}
-				}			
+					rowData[i][11] = ""+found[i];
+				}
+				DefaultTableModel model = new DefaultTableModel(rowData, colNames);
+				JTable table = new JTable(model);
+				JTablePopupMenuExample menu = new JTablePopupMenuExample();
+				menu.add(new JScrollPane(table));
+				menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				table.setSize(640, 150);
+				menu.setLocationRelativeTo(null);
+				menu.setVisible(true);
+				table.setVisible(true);
+				menu.setSize(500,250);
 			}
 		}
 	}
