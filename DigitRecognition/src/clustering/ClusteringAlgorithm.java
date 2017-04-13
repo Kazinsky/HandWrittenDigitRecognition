@@ -1,24 +1,24 @@
 package clustering;
 
+import interfaces.ClusteringSimilarity;
 import interfaces.Algorithm;
 import java.util.List;
 import java.util.ArrayList;
 import dataObjects.DataSample;
 import enums.DigitClass;
 
-public class ClusteringAlgorithm implements Algorithm{
+public class ClusteringAlgorithm implements Algorithm {
     private List<Cluster> clusters;
-    private float alpha;
-    private float beta;
     private float threshold;
     private int kNeighbours;
+    private ClusteringSimilarity similarity;
     
-    public ClusteringAlgorithm() {
-    	alpha = 2.5f;
-		beta = 2.5f;
+    public ClusteringAlgorithm(ClusteringSimilarity cs) {
 		threshold = 0.7f;
 		clusters = new ArrayList<Cluster>();
 		kNeighbours = 1;
+		
+		similarity = cs;
     }
     
     public void train(List<DataSample> trainingSet) {
@@ -29,16 +29,16 @@ public class ClusteringAlgorithm implements Algorithm{
     	
     	for (DataSample ds : trainingSet) {
 	    	Cluster toAdd = null;
-			maxThreshold = 0;
+			maxThreshold = threshold - 0.001f;
 			for (Cluster c : clusters) {
 				t = c.compare(ds);
-				if (t >= threshold && t > maxThreshold) {
+				if (t > maxThreshold) {
 					maxThreshold = t;
 					toAdd = c;
 				}
 			}
 			if (toAdd == null) {
-				clusters.add(new Cluster(ds, alpha, beta));
+				clusters.add(new Cluster(similarity, ds));
 			}
 			else {
 				Cluster newCluster = null;
@@ -73,6 +73,15 @@ public class ClusteringAlgorithm implements Algorithm{
 				nextPrint += 0.1f;
 			}
 		}
+    	
+    	for (int i = 0; i < 10; ++i) {
+    		int total = 0;
+    		for (Cluster c : clusters) {
+    			if (c.getDigitClass().getValue() == i)
+    				total++;
+    		}
+    		System.out.println("Digit " + i + " has " + total + " clusters...");
+    	}
     }
 
     // Try to guess to which digits belong ds
@@ -106,16 +115,6 @@ public class ClusteringAlgorithm implements Algorithm{
     		}
     	}
     	return DigitClass.values()[idx];
-    }
-
-    // Change alpha value
-    public void setAlpha(float a) {
-    	alpha = a;
-    }
-
-    // Change beta value
-    public void setBeta(float b) {
-    	beta = b;
     }
 
     // Change threshold value

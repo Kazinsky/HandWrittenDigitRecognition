@@ -1,5 +1,6 @@
 package clustering;
 
+import interfaces.ClusteringSimilarity;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -12,16 +13,16 @@ public class Cluster {
     private List<Float> averages;
     private float alpha;
     private float beta;
+    private ClusteringSimilarity function;
     
-    public Cluster(DataSample ds, float a, float b) {
+    public Cluster(ClusteringSimilarity cs, DataSample ds) {
     	center = ds;
-    	alpha = a;
-    	beta = b;
     	samples = new ArrayList<DataSample>();
     	averages = new ArrayList<Float>();
     	
     	averages.add(1.0f);
     	samples.add(ds);
+    	function = cs;
     }
     
     public Cluster() {
@@ -35,6 +36,8 @@ public class Cluster {
     	float vOther;
     	float t;
     	Cluster newCluster = new Cluster();
+    	
+    	newCluster.function = function;
     	
     	newCluster.samples = new ArrayList<DataSample>(samples);
     	newCluster.averages = new ArrayList<Float>(averages);
@@ -97,7 +100,7 @@ public class Cluster {
     private float compare(DataSample first, DataSample second) {
     	int[] mat = buildMatrix(first.asVector(), second.asVector());
     	
-    	return ((alpha * mat[0]) + (beta * mat[3])) / ((alpha * mat[0]) + (beta * mat[3]) + 2 * (mat[1] + mat[2]));
+    	return function.compute(mat);
     }
     
     // Compare ds to cluster center and return the coefficient of similarity.
