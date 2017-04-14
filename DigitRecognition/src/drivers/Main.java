@@ -4,6 +4,7 @@ import clustering.JaccardSimilarity;
 import clustering.PaperSimilarity;
 import clustering.RogersTanimoto;
 import classifiers.DecisionTree;
+import classifiers.MultiLayerPerceptron;
 import classifiers.NaiveBayes;
 import clustering.ClusteringAlgorithm;
 import featuresLoaders.NaiveFeatureLoader;
@@ -22,7 +23,8 @@ public class Main {
 			ap.addArgument("--clustering-rt", new ClusteringAlgorithm(new RogersTanimoto()));
 			ap.addArgument("--clustering-jaccard", new ClusteringAlgorithm(new JaccardSimilarity()));
 			ap.addArgument("--decision-tree", new DecisionTree());
-			ap.addArgument("--naive-bayes", new NaiveBayes());
+			ap.addArgument("--naive-bayes", new NaiveBayes());						
+			ap.addArgument("--mlp", new MultiLayerPerceptron(10,3)); //# hidden neurons, # hidden layers
 
 			ap.parse(args);
 			
@@ -31,6 +33,7 @@ public class Main {
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }
