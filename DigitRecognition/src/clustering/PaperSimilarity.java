@@ -13,6 +13,6 @@ public class PaperSimilarity implements ClusteringSimilarity {
 		beta = b;
 	}
 	public float compute(int[] mat) {
-		return ((alpha * mat[0]) + (beta * mat[3])) / ((alpha * mat[0]) + (beta * mat[3]) + 2 * (mat[1] + mat[2]));
+		return ((alpha * mat[0]) + (beta * mat[3])) / ((alpha * mat[0]) + (beta * mat[3]) + 2 * mat[1] + 2 * mat[2]);
 	}
 }
