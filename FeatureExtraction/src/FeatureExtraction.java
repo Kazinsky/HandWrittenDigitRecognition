@@ -35,13 +35,12 @@ public class FeatureExtraction {
 			for (int w = 0; w < width; ++w) {
 				Color cl = new Color(image.getRGB(w,  h));
 				if (cl.equals(Color.BLACK)) {
-					currentWriter.write("1 ");
+					currentWriter.write("1");
 				}
 				else if (cl.equals(Color.WHITE)){
-					currentWriter.write("0 ");
+					currentWriter.write("0");
 				}
 			}
-			currentWriter.newLine();
 		}
 		currentWriter.newLine();
 	}
