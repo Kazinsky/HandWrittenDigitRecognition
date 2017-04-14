@@ -14,8 +14,12 @@ private int id;
 private Map<Feature,Integer> data;
 private DigitClass digitClass;
 private Vector<Integer> vectorData;
+private int height;
+private int width;
 
-public DataSample() {
+public DataSample(int h, int w) {
+	height = h;
+	width = w;
 }
 
 public DataSample(int id, Map<Feature, Integer> data, DigitClass digitClass) {
@@ -40,12 +44,10 @@ public void setData(Map<Feature, Integer> data) {
 	this.data = data;
 	vectorData = new Vector<Integer>();
 	
-	for (int r = 0; r < 20; ++r) {
-		for (int c = 0; c < 20; ++c) {
+	for (int r = 0; r < height; ++r) {
+		for (int c = 0; c < width; ++c) {
 			Feature f = new Feature("PIXEL" + r + ":"+c);
-			if (data.get(f) == null) {
-				System.out.println("null at " + id + " " + r + ":" + c);
-			}
+
 			vectorData.add(data.get(f));
 		}
 	}
@@ -68,13 +70,7 @@ public static List<DataSample> split(List<DataSample> dataSet, Feature featureTo
 		
 		if(item.data.get(featureToSplitOn) == featureValue.getValue()){
 			
-			DataSample sample = new DataSample();
-			
-			sample.setId(item.getId());
-			sample.setData(item.getData());
-			sample.setDigitClass(item.getDigitClass());
-			
-			subSet.add(sample);
+			subSet.add(item);
 		}
 	}
 	
